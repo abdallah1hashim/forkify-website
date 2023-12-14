@@ -6,61 +6,17 @@ class ResipeView extends View {
   _parentEl = document.querySelector('.recipe');
   _error = 'No recipe found, please try again!';
 
-  _data;
-  render(data) {
-    this._data = data;
-    const markup = this._generateMarkup();
-    this._clear();
-    this._parentEl.insertAdjacentHTML('afterbegin', markup);
-  }
-  _clear() {
-    this._parentEl.innerHTML = '';
-  }
-  renderSpinner = function () {
-    const markup = `
-        <div class="spinner">
-            <svg>
-                <use href="${icons}_icon-loader"></use>
-            </svg>
-        </div>
-    `;
-    this._parentEl.innerHTML = '';
-    this._parentEl.insertAdjacentHTML('afterbegin', markup);
-    return 'done';
-  };
-  renderError = function (message = this._error) {
-    const markup = `
-  <div class="error">
-    <div>
-      <svg>
-        <use href="${icons}.svg#icon-alert-triangle"></use>
-      </svg>
-    </div>
-    <p>${message}</p> 
-  </div>
-  `;
-    this._clear();
-    this._parentEl.insertAdjacentHTML('afterbegin', markup);
-    return 'done';
-  };
-  renderMessage = function (message = '') {
-    const markup = `
-  <div class="error">
-    <div>
-      <svg>
-        <use href="${icons}.svg#icon-smile"></use>
-      </svg>
-    </div>
-    <p>${message}</p> 
-  </div>
-  `;
-    this._clear();
-    this._parentEl.insertAdjacentHTML('afterbegin', markup);
-    return 'done';
-  };
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(ev => {
       window.addEventListener(ev, handler);
+    });
+  }
+  addHandlerClick(handler) {
+    this._parentEl.addEventListener('click', e => {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const updateTo = +btn.dataset.updateTo;
+      if (updateTo > 0) handler(updateTo);
     });
   }
   _generateMarkup() {
@@ -94,12 +50,16 @@ class ResipeView extends View {
                     <span class="recipe__info-text">servings</span>
         
                     <div class="recipe__info-buttons">
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to="${
+                        this._data.servings - 1
+                      }">
                         <svg>
                           <use href="${icons}#icon-minus-circle"></use>
                         </svg>
                       </button>
-                      <button class="btn--tiny btn--increase-servings">
+                      <button class="btn--tiny btn--update-servings" data-update-to="${
+                        this._data.servings + 1
+                      }">
                         <svg>
                           <use href="${icons}#icon-plus-circle"></use>
                         </svg>
